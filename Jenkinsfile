@@ -93,19 +93,18 @@ pipeline {
         
        stage('Stage 2 - Installing dependencies') {
            steps {
-                ansiColor('xterm') {
-                    bat 'npm i'
+                bat 'npm i'
                 echo 'dependencies installed'
-                }
+
            }
        }
        
        //This deletes any older xml results files present in the directory
-       stage('Stage 3 - Clearing old reports') {
-           steps {
-               bat "npm run report:pre"
-           }
-       }
+    //    stage('Stage 3 - Clearing old reports') {
+    //        steps {
+    //            bat "npm run report:pre"
+    //        }
+    //    }
        
        stage('Stage 4 - Running cypress e2e Tests') {
             //For recording tests on Cypress Cloud Dashboard, you need to set these environment variables
@@ -130,65 +129,65 @@ pipeline {
         }
         
         //Mocha JUnit Reporter produces separate XML for each spec result, so we merge the test results into one XML file 
-       stage('Stage 5 - Merging JUnit reports') {
-           steps {
-               bat "npm run report:post"
-           }
-       }
+    //    stage('Stage 5 - Merging JUnit reports') {
+    //        steps {
+    //            bat "npm run report:post"
+    //        }
+    //    }
 
    }
    
-   post {
-        always {
-            //Publish the HTML report using the HTML Publisher plugin
-            echo 'Publishing the Extent Report'
-            publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'cypress/results/cypress-mochawesome-reporter',
-                    reportFiles: 'index.html',
-                    reportName: 'Cypress Mochawesome Report',
-                    reportTitles: 'Cypress Test Automation Framework',
-                    useWrapperFileDirectly: true
-            ])
+//    post {
+//         always {
+//             //Publish the HTML report using the HTML Publisher plugin
+//             echo 'Publishing the Extent Report'
+//             publishHTML([
+//                     allowMissing: false,
+//                     alwaysLinkToLastBuild: false,
+//                     keepAll: true,
+//                     reportDir: 'cypress/results/cypress-mochawesome-reporter',
+//                     reportFiles: 'index.html',
+//                     reportName: 'Cypress Mochawesome Report',
+//                     reportTitles: 'Cypress Test Automation Framework',
+//                     useWrapperFileDirectly: true
+//             ])
             
-            //To avoid duplicate results, we comment this, and use it within script only
-            //junit 'cypress/results/junit/combined-report.xml'
+//             //To avoid duplicate results, we comment this, and use it within script only
+//             //junit 'cypress/results/junit/combined-report.xml'
 
-            script {
-                // Get the JUnit test results
-                echo 'Publishing JUnit XML Results'
-                def testResults = junit testResults: 'cypress/results/junit/combined-report.xml'
+//             script {
+//                 // Get the JUnit test results
+//                 echo 'Publishing JUnit XML Results'
+//                 def testResults = junit testResults: 'cypress/results/junit/combined-report.xml'
                 
-                //Mapping build status to slack notification colors
-                def COLOR_MAP = [
-                    'SUCCESS'   : '#4CAF50',   //Green
-                    'FAILURE'   : '#F44336',   //Red
-                    'UNSTABLE'  : '#FFC107',   //Yellow
-                    'ABORTED'   : '#9E9E9E',   //Grey
-                    'NOT_BUILT' : '#2196F3',   //Blue
-                    'UNKNOWN'   : '#CCCCCC'    //Light Gray
-                ]
+//                 //Mapping build status to slack notification colors
+//                 def COLOR_MAP = [
+//                     'SUCCESS'   : '#4CAF50',   //Green
+//                     'FAILURE'   : '#F44336',   //Red
+//                     'UNSTABLE'  : '#FFC107',   //Yellow
+//                     'ABORTED'   : '#9E9E9E',   //Grey
+//                     'NOT_BUILT' : '#2196F3',   //Blue
+//                     'UNKNOWN'   : '#CCCCCC'    //Light Gray
+//                 ]
                 
-                echo 'Sending Slack Notification'
-                slackSend channel: '#cypress-testing-framework',
-                          color: COLOR_MAP[currentBuild.currentResult],
-                          message: "*${currentBuild.currentResult}*\n *Job*: ${env.JOB_NAME} , *Build*: ${env.BUILD_NUMBER}\n *Test Results*: \n\t Total: ${testResults.totalCount} Passed: ${testResults.passCount} Failed: ${testResults.failCount} Skipped: ${testResults.skipCount}\n *Test Run Configuration*:\n\t *Test Script(s)*: ${params.TEST_SPEC}\n\t *Browser*: ${params.BROWSER}  ${params.BROWSER_MODE}\n\t *Tags*: ${params.TAG}\n\t *Environment*: ${params.TEST_ENVIRONMENT}\n\t *Dashboard Recording*: ${params.RECORD_TESTS}\n *Test Report*: ${env.BUILD_URL}Cypress_20Mochawesome_20Report/ \n *More info*: ${env.BUILD_URL}"
+//                 echo 'Sending Slack Notification'
+//                 slackSend channel: '#cypress-testing-framework',
+//                           color: COLOR_MAP[currentBuild.currentResult],
+//                           message: "*${currentBuild.currentResult}*\n *Job*: ${env.JOB_NAME} , *Build*: ${env.BUILD_NUMBER}\n *Test Results*: \n\t Total: ${testResults.totalCount} Passed: ${testResults.passCount} Failed: ${testResults.failCount} Skipped: ${testResults.skipCount}\n *Test Run Configuration*:\n\t *Test Script(s)*: ${params.TEST_SPEC}\n\t *Browser*: ${params.BROWSER}  ${params.BROWSER_MODE}\n\t *Tags*: ${params.TAG}\n\t *Environment*: ${params.TEST_ENVIRONMENT}\n\t *Dashboard Recording*: ${params.RECORD_TESTS}\n *Test Report*: ${env.BUILD_URL}Cypress_20Mochawesome_20Report/ \n *More info*: ${env.BUILD_URL}"
      
-            }
-        }
+//             }
+//         }
         
-        success {
-            echo 'Build Successful'
-        }
+//         success {
+//             echo 'Build Successful'
+//         }
 
-        failure {
-            echo 'Build Failed'
-        }
+//         failure {
+//             echo 'Build Failed'
+//         }
 
-        unstable {
-            echo 'Build unstable'
-        }
-    }
+//         unstable {
+//             echo 'Build unstable'
+//         }
+//     }
 }
