@@ -78,33 +78,24 @@ pipeline {
        stage('Stage 1 - Checkout Code') {
         //The steps section defines a series of one or more steps to be executed in a given stage directive.
             steps {
-                // Get some code from a GitHub repository
-                /* git ([
-                        branch: 'main',
-                        changelog: true,
-                        credentialsId: 'itkhanz',
-                        poll: false,
-                        url: 'https://github.com/itkhanz/Cypress-Framework'
-                ]) */
-
                 echo 'Code is checked out'
             }
         }
         
        stage('Stage 2 - Installing dependencies') {
            steps {
-                bat 'npm i'
+                sh 'npm i'
                 echo 'dependencies installed'
 
            }
        }
        
-       //This deletes any older xml results files present in the directory
-    //    stage('Stage 3 - Clearing old reports') {
-    //        steps {
-    //            bat "npm run report:pre"
-    //        }
-    //    }
+    //    This deletes any older xml results files present in the directory
+       stage('Stage 3 - Clearing old reports') {
+           steps {
+               sh "npm run report:pre"
+           }
+       }
        
        stage('Stage 4 - Running cypress e2e Tests') {
             //For recording tests on Cypress Cloud Dashboard, you need to set these environment variables
@@ -114,14 +105,14 @@ pipeline {
             }
 
             steps {
-                //bat "SET NO_COLOR=$NO_COLOR"    //You may want to do this if ASCII characters or colors are not properly formatted in your CI.
+                //sh "SET NO_COLOR=$NO_COLOR"    //You may want to do this if ASCII characters or colors are not properly formatted in your CI.
                 script {
                     if (params.TEST_SPEC == "cypress/e2e/tests/*.cy.js") {
                         echo "Running all test scripts with Browser: ${params.BROWSER}, TAG: ${params.TAG}, Environment: ${params.TEST_ENVIRONMENT}"
-                        bat "npx cypress run --${params.BROWSER_MODE} --browser ${params.BROWSER} --env environmentName=${params.TEST_ENVIRONMENT},grepTags=${params.TAG} ${params.RECORD_TESTS}"
+                        sh "npx cypress run --${params.BROWSER_MODE} --browser ${params.BROWSER} --env environmentName=${params.TEST_ENVIRONMENT},grepTags=${params.TAG} ${params.RECORD_TESTS}"
                     } else {
                         echo "Running script: ${params.TEST_SPEC} with Browser: ${params.BROWSER}, TAG: ${params.TAG}, Environment: ${params.TEST_ENVIRONMENT}"
-                        bat "npx cypress run --spec cypress/e2e/tests/${params.TEST_SPEC}.cy.js --${params.BROWSER_MODE} --browser ${params.BROWSER} --env environmentName=${params.TEST_ENVIRONMENT},grepTags=${params.TAG} ${params.RECORD_TESTS}"
+                        sh "npx cypress run --spec cypress/e2e/tests/${params.TEST_SPEC}.cy.js --${params.BROWSER_MODE} --browser ${params.BROWSER} --env environmentName=${params.TEST_ENVIRONMENT},grepTags=${params.TAG} ${params.RECORD_TESTS}"
                     }
                 }
                 
@@ -131,7 +122,7 @@ pipeline {
         //Mocha JUnit Reporter produces separate XML for each spec result, so we merge the test results into one XML file 
     //    stage('Stage 5 - Merging JUnit reports') {
     //        steps {
-    //            bat "npm run report:post"
+    //            sh "npm run report:post"
     //        }
     //    }
 
