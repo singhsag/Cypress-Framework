@@ -309,7 +309,6 @@ The Project is configured to run Cypress in Continuous Integration with multiple
     * Allows to select test specs, browser, browser mode, tags, environment, dashboard recording.
   * Publishes Mochawesome HTML report via HTML Publisher Plugin
   * Parses JUnit XML results to display a summary and trends of test results
-  * Sends a Slack Notification with test results summary, link to test report, and job.
 * See the [Jenkinsfile](./Jenkinsfile) to see how the pipeline is configured.
 * For more detail on cypress with Jenkins, read [Cypress Jenkins](./doc/jenkins.md)
 
@@ -317,5 +316,3 @@ The Project is configured to run Cypress in Continuous Integration with multiple
 <img src="doc/jenkins-pipieline-dashboard.PNG">
 
 <img src="doc/jenkins-pipeline-config.PNG">
-
-<img src="doc/jenkins-slack-notification.PNG">
