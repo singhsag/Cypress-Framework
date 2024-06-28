@@ -62,6 +62,15 @@ pipeline {
     //The stage directive goes in the stages section and should contain a steps section, an optional agent section, 
     //or other stage-specific directives. Practically speaking, all of the real work done by a Pipeline will be wrapped in one or more stage directives.
    stages {
+     stage('Stage 0 - Prepare Environment') {
+            steps {
+                script {
+                    // Start Xvfb
+                    sh 'Xvfb :99 -screen 0 1024x768x24 &'
+                    sh 'export DISPLAY=:99'
+                }
+            }
+        }
        stage('Stage 1 - Checkout Code') {
         //The steps section defines a series of one or more steps to be executed in a given stage directive.
             steps {
